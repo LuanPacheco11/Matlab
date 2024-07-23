@@ -1,0 +1,357 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>NN_Multiclasse_Img</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-07-22"><meta name="DC.source" content="NN_Multiclasse_Img.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear;
+close <span class="string">all</span>;
+clc;
+
+numrow = 40;
+numcol = 40;
+X = zeros(numrow, numcol, 5);
+
+cd <span class="string">Treinamento</span>
+imagefiles = dir(<span class="string">'*.jpg'</span>);
+nfiles = length(imagefiles);    <span class="comment">% Number of files found</span>
+<span class="keyword">for</span> ii=1:nfiles
+   currentfilename = imagefiles(ii).name;
+   X(:,:,ii) = funcao_ler_imagem(currentfilename, numrow, numcol);
+<span class="keyword">end</span>
+cd <span class="string">..</span>
+
+D = [ 1 0 0 0 0;
+      0 1 0 0 0;
+      0 0 1 0 0;
+      0 0 0 1 0;
+      0 0 0 0 1];
+
+<span class="comment">%%%%% TRAINING NN %%%%%%%</span>
+M  = 1:10; rng(3);
+W1 = 2*rand(50, numrow*numcol) - 1;
+W2 = 2*rand(5, 50) - 1;
+<span class="keyword">for</span> i=1:length(M)
+    epoch(i) = factorial(M(i));
+    <span class="comment">% --- training NN for each epoch size ----</span>
+    <span class="keyword">for</span> j=1:epoch
+        [W1, W2, Er] = MultiClass(W1, W2, X, D);
+    <span class="keyword">end</span>
+    avgEr(i) = mean(abs(Er),1);
+<span class="keyword">end</span>
+
+MM = factorial(M);
+figure(1)
+loglog(MM, avgEr)
+xlabel(<span class="string">"Epoch"</span>)
+ylabel(<span class="string">"avg. |Error|"</span>)
+grid <span class="string">on</span>
+
+<span class="comment">%%%% Alphabet Plot %%%%%</span>
+figure(2)
+width=5;
+subplot(1,5,1)
+spy(X(:, :, 1))
+title(<span class="string">"Alphabet: 1"</span>)
+subplot(1,5,2)
+spy(X(:, :, 2))
+title(<span class="string">"Alphabet: 2"</span>)
+subplot(1,5,3)
+spy(X(:, :, 3))
+title(<span class="string">"Alphabet: 3"</span>)
+subplot(1,5,4)
+spy(X(:, :, 4))
+title(<span class="string">"Alphabet: 4"</span>)
+subplot(1,5,5)
+spy(X(:, :, 5))
+title(<span class="string">"Alphabet: 5"</span>)
+
+<span class="comment">%%%%%%%% TEST / INFERENCE %%%%%%%%%%%%</span>
+N = 5; <span class="comment">%symbols</span>
+<span class="comment">%%%% IMPERFECT Symbols or OUT of alphabet</span>
+
+cd <span class="string">Validacao</span>
+imagefiles = dir(<span class="string">'*.jpg'</span>);
+nfiles = length(imagefiles);    <span class="comment">% Number of files found</span>
+<span class="keyword">for</span> ii=1:nfiles
+   currentfilename = imagefiles(ii).name;
+   Xop(:,:,ii) = funcao_ler_imagem(currentfilename, numrow, numcol);
+<span class="keyword">end</span>
+cd <span class="string">..</span>
+
+<span class="comment">%%%% PLot of Tested Symbols %%%%%</span>
+figure(3)
+subplot(1,5,1)
+spy(Xop(:, :, 1))
+title(<span class="string">"Test 1: symb. unkown"</span>)
+subplot(1,5,2)
+spy(Xop(:, :, 2))
+title(<span class="string">"Test 2: symb. unkown"</span>)
+subplot(1,5,3)
+spy(Xop(:, :, 3))
+title(<span class="string">"Test 3: symb. unkown"</span>)
+subplot(1,5,4)
+spy(Xop(:, :, 4))
+title(<span class="string">"Test 4: symb. unkown"</span>)
+subplot(1,5,5)
+spy(Xop(:, :, 5))
+title(<span class="string">"Test 5: symb. unkown"</span>)
+<span class="comment">%%%%%% inference %%%%%%%</span>
+<span class="keyword">for</span> k = 1:N
+    x = reshape(Xop(:, :, k), 40*40, 1);
+    v1 = W1*x;
+    v1 = dlarray(v1);
+    y1 = sigmoid(v1);
+    v = W2*y1;
+    v = extractdata(v);
+    y(:,k) = softmax(v);
+<span class="keyword">end</span>
+
+figure(4)
+bar3(y)
+xlabel(<span class="string">"Test #"</span>)
+ylabel(<span class="string">"Symbol infered: 1 to 5"</span>)
+zlabel(<span class="string">"Inference level"</span>)
+
+<span class="keyword">function</span> [W1, W2, e] = MultiClass(W1, W2, X, D)
+    alpha = 0.9;
+    N = 5;
+    <span class="keyword">for</span> k = 1:N
+        x = reshape(X(:, :, k), 40*40, 1);
+        d = D(k, :)';
+        v1 = W1*x;
+        v1 = dlarray(v1);
+        y1 = sigmoid(v1);
+        v = W2*y1;
+        v = extractdata(v);
+        y = softmax(v);
+        e = d - y;
+        delta = e;
+        e1 = W2'*delta;
+        delta1 = y1.*(1-y1).*e1;
+        dW1 = alpha*delta1*x';
+        W1 = W1 + dW1;
+        dW2 = alpha*delta*y1';
+        W2 = W2 + dW2;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> imagem = funcao_ler_imagem(name, numrow, numcol)
+    img = imread(name);
+    img =255-img;
+    img = im2double(img);
+    J = imresize(img, [numrow, numcol]);
+    J = rgb2gray(J);
+    J = imbinarize(J);
+    imagem = J;
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="NN_Multiclasse_Img_01.png" alt=""> <img vspace="5" hspace="5" src="NN_Multiclasse_Img_02.png" alt=""> <img vspace="5" hspace="5" src="NN_Multiclasse_Img_03.png" alt=""> <img vspace="5" hspace="5" src="NN_Multiclasse_Img_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear;
+close all; 
+clc;
+
+numrow = 40;
+numcol = 40;
+X = zeros(numrow, numcol, 5);
+
+cd Treinamento
+imagefiles = dir('*.jpg');      
+nfiles = length(imagefiles);    % Number of files found
+for ii=1:nfiles
+   currentfilename = imagefiles(ii).name;
+   X(:,:,ii) = funcao_ler_imagem(currentfilename, numrow, numcol);
+end
+cd ..
+
+D = [ 1 0 0 0 0;
+      0 1 0 0 0;
+      0 0 1 0 0;
+      0 0 0 1 0;
+      0 0 0 0 1];
+
+%%%%% TRAINING NN %%%%%%%
+M  = 1:10; rng(3);
+W1 = 2*rand(50, numrow*numcol) - 1;
+W2 = 2*rand(5, 50) - 1;
+for i=1:length(M)
+    epoch(i) = factorial(M(i));
+    % REPLACE_WITH_DASH_DASH- training NN for each epoch size REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+    for j=1:epoch
+        [W1, W2, Er] = MultiClass(W1, W2, X, D);
+    end
+    avgEr(i) = mean(abs(Er),1);
+end
+
+MM = factorial(M);
+figure(1)
+loglog(MM, avgEr)
+xlabel("Epoch")
+ylabel("avg. |Error|")
+grid on
+
+%%%% Alphabet Plot %%%%%
+figure(2)
+width=5;
+subplot(1,5,1)
+spy(X(:, :, 1))
+title("Alphabet: 1")
+subplot(1,5,2)
+spy(X(:, :, 2))
+title("Alphabet: 2")
+subplot(1,5,3)
+spy(X(:, :, 3))
+title("Alphabet: 3")
+subplot(1,5,4)
+spy(X(:, :, 4))
+title("Alphabet: 4")
+subplot(1,5,5)
+spy(X(:, :, 5))
+title("Alphabet: 5")
+
+%%%%%%%% TEST / INFERENCE %%%%%%%%%%%%
+N = 5; %symbols
+%%%% IMPERFECT Symbols or OUT of alphabet
+
+cd Validacao
+imagefiles = dir('*.jpg');      
+nfiles = length(imagefiles);    % Number of files found
+for ii=1:nfiles
+   currentfilename = imagefiles(ii).name;
+   Xop(:,:,ii) = funcao_ler_imagem(currentfilename, numrow, numcol);
+end
+cd ..
+
+%%%% PLot of Tested Symbols %%%%%
+figure(3)
+subplot(1,5,1)
+spy(Xop(:, :, 1))
+title("Test 1: symb. unkown")
+subplot(1,5,2)
+spy(Xop(:, :, 2))
+title("Test 2: symb. unkown")
+subplot(1,5,3)
+spy(Xop(:, :, 3))
+title("Test 3: symb. unkown")
+subplot(1,5,4)
+spy(Xop(:, :, 4))
+title("Test 4: symb. unkown")
+subplot(1,5,5)
+spy(Xop(:, :, 5))
+title("Test 5: symb. unkown")
+%%%%%% inference %%%%%%%
+for k = 1:N
+    x = reshape(Xop(:, :, k), 40*40, 1);
+    v1 = W1*x;
+    v1 = dlarray(v1);
+    y1 = sigmoid(v1);
+    v = W2*y1;
+    v = extractdata(v);
+    y(:,k) = softmax(v);
+end
+
+figure(4)
+bar3(y)
+xlabel("Test #")
+ylabel("Symbol infered: 1 to 5")
+zlabel("Inference level")
+
+function [W1, W2, e] = MultiClass(W1, W2, X, D)
+    alpha = 0.9;
+    N = 5;
+    for k = 1:N
+        x = reshape(X(:, :, k), 40*40, 1);
+        d = D(k, :)';
+        v1 = W1*x;
+        v1 = dlarray(v1);
+        y1 = sigmoid(v1);
+        v = W2*y1;
+        v = extractdata(v);
+        y = softmax(v);
+        e = d - y;
+        delta = e;
+        e1 = W2'*delta;
+        delta1 = y1.*(1-y1).*e1;
+        dW1 = alpha*delta1*x';
+        W1 = W1 + dW1;
+        dW2 = alpha*delta*y1';
+        W2 = W2 + dW2;
+    end
+end
+
+function imagem = funcao_ler_imagem(name, numrow, numcol)
+    img = imread(name);
+    img =255-img;
+    img = im2double(img);
+    J = imresize(img, [numrow, numcol]);
+    J = rgb2gray(J);
+    J = imbinarize(J);
+    imagem = J;
+    
+end
+##### SOURCE END #####
+--></body></html>
