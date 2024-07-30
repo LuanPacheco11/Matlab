@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 clear;
 clc;
 close all;
@@ -35,4 +36,25 @@ figure(2)
 subplot(2,1,1)
 plot(C21d_eq, C32d_eq, "r")
 subplot(2,1,2)
+=======
+clear;
+clc;
+close all;
+
+M = csvread("dados_acelerometro_1.csv");
+
+theta = M(33:45,1);
+c21 = M(33:45,2);
+c32 = M(33:45,3);
+c21d = c21-c21(1);
+c32d = c32-c32(1);
+
+
+
+figure(1)
+plot(theta, c21d, "r", theta, c32d, "b")
+legend("C12", "C32")
+
+figure(2)
+>>>>>>> 0015cab0cb0a83d25770e29c7fdb18a61f97b6d9
 plot(c21d, c32d, "r")
