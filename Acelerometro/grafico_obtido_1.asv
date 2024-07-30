@@ -1,0 +1,9 @@
+clear;
+clc;
+close all;
+
+M = csvread("dados_acelerometro_1.csv");
+
+theta = M(:,1);
+c21 = M(:,2);
+c32 = M(:,3);

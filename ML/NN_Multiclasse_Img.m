@@ -16,6 +16,12 @@ for ii=1:nfiles
 end
 cd ..
 
+% D = [1 0 0 0 0;
+%      0 1 0 0 0;
+%      0 0 1 0 0;
+%      0 0 0 1 0;
+%      0 0 0 0 1 ];
+
 D = [ 1 0 0 0 0;
       1 0 0 0 0;
       1 0 0 0 0;
@@ -43,7 +49,7 @@ D = [ 1 0 0 0 0;
       0 0 0 0 1];
 
 %%%%% TRAINING NN %%%%%%%
-fact = 10;
+fact = 5;
 M  = 1:fact; rng(3);
 W1 = 2*rand(5*fact, numrow*numcol) - 1;
 W2 = 2*rand(5, 5*fact) - 1;
