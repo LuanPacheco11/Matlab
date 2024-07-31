@@ -94,7 +94,7 @@ cd ..
 figure(3)
 width=25;
 for k = 1:N
-    subplot(1,5,k)
+    subplot(2,3,k)
     spy(Xop(:, :, k))
     title(sprintf('Test %d: symb. unkown', k))
 end

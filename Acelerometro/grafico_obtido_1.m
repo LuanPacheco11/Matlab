@@ -18,8 +18,8 @@ theta = linspace(0, 0.103, 13);
 Eq = csvread("acelerometro_eq_pontos.csv");
 
 % Adquire os dados modelados do acelerometro
-C12_eq = Eq(1:103,1)'*10;
-C32_eq = Eq(115:217,1)'*10;
+C12_eq = Eq(1:103,1)'*5;
+C32_eq = Eq(115:217,1)'*5;
 
 C21d_eq = C12_eq-C12_eq(1);
 C32d_eq = C32_eq-C32_eq(1);
